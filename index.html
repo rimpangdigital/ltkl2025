@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Profil Perencana</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+      text-align: center;
+    }
+    .hidden { display: none; }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover { background: #45a049; }
+    .option {
+      display: block;
+      margin: 10px 0;
+      padding: 12px;
+      background: #eee;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .option:hover { background: #ddd; }
+    .result-image {
+      max-width: 200px;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Halaman pembuka -->
+    <div id="startPage">
+      <h1>Selamat Datang di board foresight Seuai tipe Kamu</h1>
+      <p>Klik tombol di bawah untuk memulai dan temukan tipe perencana kamu!</p>
+      <button onclick="startQuiz()">Mulai Kuis</button>
+    </div>
+
+    <!-- Pertanyaan -->
+    <div id="quizPage" class="hidden">
+      <h2 id="questionText"></h2>
+      <div id="options"></div>
+    </div>
+
+    <!-- Hasil -->
+    <div id="resultPage" class="hidden">
+      <h2>Hasil Kuis Kamu:</h2>
+      <img id="resultImage" class="result-image hidden" alt="Gambar hasil" />
+      <p id="resultText"></p>
+      <button onclick="restartQuiz()">Ulangi</button>
+      <button onclick="window.print()">Cetak / Simpan PDF</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "Kalau kamu jadi pemimpin daerah, hal pertama yang paling pengen kamu benahi adalah…",
+        options: [
+          { label: "A. Kesejahteraan lewat ekonomi hijau & pelestarian alam", type: "A" },
+          { label: "B. Bikin aturan yang jelas biar komunitas dan masyarakat bisa jalan tanpa hambatan.", type: "B" },
+          { label: "C. Percepatan investasi & infrastruktur besar", type: "C" },
+          { label: "D. Siaga darurat: cegah bencana, tangani krisis dulu", type: "D" }
+        ]
+      },
+      {
+        text: "Cara kamu melihat isu lingkungan adalah…",
+        options: [
+          { label: "A. Investasi masa depan, harus dikelola berkelanjutan", type: "A" },
+          { label: "B. Tanggung jawab bersama, meski sering pemerintahnya nggak konsisten", type: "B" },
+          { label: "C. Pastikan ada aturan main yang jelas, tapi pembangunan tetap jalan.", type: "C" },
+          { label: "D. Fokus redam konflik dulu biar nggak chaos.", type: "D" }
+        ]
+      },
+      {
+        text: "Kalau ada konflik lahan antara masyarakat dan perusahaan, sikapmu?",
+        options: [
+          { label: "A. Mediasi, cari solusi yang jaga alam sekaligus sejahterakan rakyat.", type: "A" },
+          { label: "B. Dukung warga, karena mereka sering lebih peduli daripada pemerintah.", type: "B" },
+          { label: "C. Pastikan aturan jelas, pembangunan tetap jalan", type: "C" },
+          { label: "D. Redam konflik dulu biar nggak chaos", type: "D" }
+        ]
+      },
+      {
+        text: "Menurutmu, apa tanda kemajuan paling penting?",
+        options: [
+          { label: "A. Masyarakat sehat, miskin berkurang, budaya lokal hidup", type: "A" },
+          { label: "B. Rakyat bisa mandiri walau pemerintah lemah", type: "B" },
+          { label: "C. Ekonomi tumbuh pesat, proyek besar jalan", type: "C" },
+          { label: "D. Masyarakat selamat dari bencana & punya akses dasar", type: "D" }
+        ]
+      },
+      {
+        text: "Kalau kamu punya dana besar, akan dipakai untuk…",
+        options: [
+          { label: "A. Investasi hijau, ekowisata, UMKM lokal", type: "A" },
+          { label: "B. Perkuat komunitas & program swadaya", type: "B" },
+          { label: "C. Kawasan industri, food estate, atau infrastruktur strategis.", type: "C" },
+          { label: "D. Restorasi lahan rusak & tanggap darurat", type: "D" }
+        ]
+      },
+      {
+        text: "Tantangan terbesar menurutmu dalam pembangunan daerah adalah…",
+        options: [
+          { label: "A. Menjaga konsistensi kebijakan supaya berkelanjutan", type: "A" },
+          { label: "B. Korupsi, kepentingan politik, kebijakan plin-plan", type: "B" },
+          { label: "C. Menyeimbangkan pertumbuhan ekonomi dengan dampak sosial.", type: "C" },
+          { label: "D. Kerusakan alam parah & lemahnya penegakan hukum.", type: "D" }
+        ]
+      },
+      {
+        text: "Kalau ada demo masyarakat soal lingkungan, kamu akan…",
+        options: [
+          { label: "A. Dengarkan & libatkan mereka dalam kebijakan", type: "A" },
+          { label: "B. Ikut dorong aksi masyarakat biar makin kuat", type: "B" },
+          { label: "C. Klarifikasi aturan & jelaskan manfaat ekonomi yang sedang dibangun.", type: "C" },
+          { label: "D. Turun tangan langsung untuk cegah konflik meluas.", type: "D" }
+        ]
+      },
+      {
+        text: "Visi jangka panjangmu untuk kabupaten adalah…",
+        options: [
+          { label: "A. Kabupaten sejahtera, hijau, jadi contoh global", type: "A" },
+          { label: "B. Kabupaten mandiri, warganya solid walau pemerintah sering kacau.", type: "B" },
+          { label: "C. Kabupaten jadi pusat ekonomi besar, meski alam harus dikompromi.", type: "C" },
+          { label: "D. Kabupaten bertahan hidup di tengah krisis, sedikit demi sedikit pulih.", type: "D" }
+        ]
+      }
+    ];
+
+    let currentQuestion = 0;
+    let answers = { A: 0, B: 0, C: 0, D: 0 };
+
+    function startQuiz() {
+      document.getElementById('startPage').classList.add('hidden');
+      document.getElementById('quizPage').classList.remove('hidden');
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion < questions.length) {
+        const q = questions[currentQuestion];
+        document.getElementById('questionText').innerText = q.text;
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        q.options.forEach(opt => {
+          const btn = document.createElement('div');
+          btn.className = 'option';
+          btn.innerText = opt.label;
+          btn.onclick = () => selectOption(opt.type);
+          optionsDiv.appendChild(btn);
+        });
+      } else {
+        showResult();
+      }
+    }
+
+    function selectOption(type) {
+      answers[type]++;
+      currentQuestion++;
+      showQuestion();
+    }
+
+    function showResult() {
+      document.getElementById('quizPage').classList.add('hidden');
+      document.getElementById('resultPage').classList.remove('hidden');
+
+      let maxType = 'A';
+      for (let key in answers) {
+        if (answers[key] > answers[maxType]) maxType = key;
+      }
+
+      let resultText = '';
+      let resultImgSrc = '';
+      if (maxType === 'A') {
+        resultText = '🌱 Arsitek Lestari: Kamu melihat masa depan sebagai investasi jangka panjang. Prioritas utamamu adalah menciptakan pembangunan yang harmonis antara kemajuan ekonomi, kelestarian lingkungan, dan kesejahteraan sosial. Kamu percaya bahwa pertumbuhan harus berkelanjutan, di mana alam dan masyarakat menjadi fondasi utama.';
+        resultImgSrc = 'arsitek lestari.png';
+      }
+      if (maxType === 'B') {
+        resultText = '🛡️ Penjaga Benteng: Kamu berfokus pada kekuatan dan kemandirian masyarakat. Kamu percaya bahwa solusi terbaik datang dari akar rumput, bukan dari atas. Tujuan utamamu adalah memberdayakan komunitas agar bisa mandiri, kuat, dan mampu menghadapi tantangan, terlepas dari kebijakan pemerintah yang sering berubah-ubah atau tidak konsisten.';
+        resultImgSrc = 'penjagabenteng.png';
+      }
+      if (maxType === 'C') {
+        resultText = '⚙️ Inovator Pragmatis: Kamu adalah seseorang yang berorientasi pada hasil nyata dan pertumbuhan ekonomi yang cepat. Kamu percaya bahwa kunci kemajuan adalah melalui investasi, pembangunan infrastruktur, dan inovasi yang mendorong produktivitas. Bagimu, aturan yang jelas adalah penting, tetapi tidak boleh menjadi penghalang untuk mencapai kemajuan ekonomi yang signifikan';
+        resultImgSrc = 'inovatorpragmatis.png';
+      }
+      if (maxType === 'D') {
+        resultText = '🔥 Pemadam Kebakaran: Kamu memiliki insting yang kuat untuk bertindak cepat dan mengatasi masalah yang paling mendesak. Kamu selalu fokus pada kesiapsiagaan dan penanganan krisis. Bagimu, hal terpenting adalah memastikan keselamatan dan pemenuhan kebutuhan dasar masyarakat, terutama saat terjadi bencana atau situasi darurat.';
+        resultImgSrc = 'pemadamkebakaran.png';
+      }
+
+      document.getElementById('resultText').innerText = resultText;
+      const resultImage = document.getElementById('resultImage');
+      resultImage.src = resultImgSrc;
+      resultImage.classList.remove('hidden');
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      answers = { A: 0, B: 0, C: 0, D: 0 };
+      document.getElementById('resultPage').classList.add('hidden');
+      document.getElementById('startPage').classList.remove('hidden');
+      document.getElementById('resultImage').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

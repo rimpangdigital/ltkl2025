@@ -1,233 +1,384 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kuis Profil Perencana</title>
+  <!-- Fonts: Grotesk for UI/heading, Montserrat for deskripsi -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root{
+      --bg:#f1f2f6;
+      --card:#f1f2f6;
+      --ink:#0e3B43;
+      --muted:#475569;
+      --brand:#00ABBC; /* light blue */
+      --brand-ink:#101111;
+      --ring:#f0c808;
+      --radius:20px;
+      --max:1500px;
     }
-    .container {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 600px;
-      width: 100%;
-      text-align: center;
+    *{box-sizing:border-box}
+    html,body{height: 1000px;}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family:"Space Grotesk", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      line-height:1.4;
     }
-    .hidden { display: none; }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #4CAF50;
-      color: #fff;
-      cursor: pointer;
-      font-size: 16px;
+    .wrap{max-width:var(--max); margin:0 auto; padding:24px}
+    header{display:flex; align-items:center; gap:14px; margin-bottom:18px}
+    header .logo{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,#dff0ff,#ffffff); display:grid; place-items:center; box-shadow:0 6px 24px rgba(3,27,78,.12)}
+    header h1{font-size:clamp(22px,2.8vw,34px); margin:0; letter-spacing:.2px}
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:0 10px 34px rgba(2, 29, 78, .10);
+      overflow:hidden;
+      border:1px solid #f1f2f6;
     }
-    button:hover { background: #45a049; }
-    .option {
-      display: block;
-      margin: 10px 0;
-      padding: 12px;
-      background: #eee;
-      border-radius: 8px;
-      cursor: pointer;
+    .page{display:none}
+    .page.active{display:block}
+
+    .hero{display:grid; grid-template-columns:1fr; gap:0}
+    .hero img{width:100%; height:500px; object-fit:cover}
+    .hero .inner{padding:24px}
+    .eyebrow{font:600 12px/1 "Space Grotesk"; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); justify-content:center; }
+    .lead{font:700 clamp(22px,3.2vw,36px)/1.2 "Space Grotesk"; margin:.3rem 0 1rem}
+    .desc{font:400 clamp(15px,1.5vw,17px)/1.7 "Montserrat", ui-sans-serif; color:var(--muted)}
+
+    .actions{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:18px }
+    .btn{appearance:none; border:0; cursor:pointer; padding:12px 18px; border-radius:14px; font:600 15px "Space Grotesk"; background:var(--brand); color:var(--brand-ink); box-shadow:0 6px 18px rgba(34,123,255,.18); transition:transform .04s ease, box-shadow .2s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn.secondary{background:#eef6ff; color:#0e3B43}
+    .btn.ghost{background:transparent; border:1px dashed #00ABBC; color:#0e3B43}
+
+    .qwrap{padding:20px}
+    .qhead{display:flex; align-items:flex-start; justify-content:space-between; gap:12px}
+    .qno{font:700 14px "Space Grotesk"; letter-spacing:.18em; color:var(--muted)}
+    .qtitle{font:700 clamp(18px,2.3vw,24px)/1.3 "Space Grotesk"; margin:.2rem 0 .8rem}
+
+    .options{display:grid; gap:12px; margin:10px 0 6px}
+    .opt{display:flex; align-items:flex-start; gap:12px; padding:14px; border:1.5px solid #e7eef7; border-radius:16px; background:#fff; cursor:pointer; transition:border-color .15s ease, box-shadow .2s ease}
+    .opt:hover{border-color:#00ABBC}
+    .opt input{margin-top:3px}
+    .alpha{flex:0 0 auto; width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:#eef6ff; font:700 14px "Space Grotesk"; color:#0b4a7d}
+    .otxt{font:400 16px/1.5 "Montserrat"}
+
+    .nav{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:18px}
+
+    .result{
+      display:grid; grid-template-columns:1fr; gap:16px;
     }
-    .option:hover { background: #ddd; }
-    .result-image {
-      max-width: 200px;
-      margin: 20px auto;
-      display: block;
+    .result img{width:428px; height:550px; object-fit:cover; border-radius:18px }
+    .rtype{font:700 clamp(22px,2.8vw,30px)/1.2 "Space Grotesk"}
+    .rdesc{font:400 16px/1.75 "Montserrat"; color:var(--muted)}
+
+    footer{color:#7b8ba1; font:400 12px "Montserrat"; text-align:center; padding:18px}
+
+    @media(min-width:820px){
+      .qgrid{display:grid; grid-template-columns:1.1fr .9fr}
+      .hero img{height:550px}
+      .result{grid-template-columns:1.1fr .9fr}
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Halaman pembuka -->
-    <div id="startPage">
-      <h1>Selamat Datang di board foresight Seuai tipe Kamu</h1>
-      <p>Klik tombol di bawah untuk memulai dan temukan tipe perencana kamu!</p>
-      <button onclick="startQuiz()">Mulai Kuis</button>
-    </div>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true">🌿</div>
+      <h1>Kuis Profil Perencana</h1>
+    </header>
 
-    <!-- Pertanyaan -->
-    <div id="quizPage" class="hidden">
-      <h2 id="questionText"></h2>
-      <div id="options"></div>
-    </div>
+    <main class="card" id="app">
 
-    <!-- Hasil -->
-    <div id="resultPage" class="hidden">
-      <h2>Hasil Kuis Kamu:</h2>
-      <img id="resultImage" class="result-image hidden" alt="Gambar hasil" />
-      <p id="resultText"></p>
-      <button onclick="restartQuiz()">Ulangi</button>
-      <button onclick="window.print()">Cetak / Simpan PDF</button>
-    </div>
+      <!-- PAGE: START -->
+      <section class="page active" id="page-start" aria-labelledby="start-title">
+        <div class="hero">
+          <img src="foresight.webp" alt="Ilustrasi foresight" />
+          <div class="inner">
+            <div class="eyebrow">8 Pertanyaan Kuis Profil Perencana</div>
+            <h2 class="lead" id="start-title">Selamat Datang di board foresight Sesuai tipe Kamu</h2>
+            <p class="desc">Klik tombol di bawah untuk memulai dan temukan tipe perencana kamu!</p>
+            <div class="actions">
+              <button class="btn" id="startBtn">Mulai foresight</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TEMPLATE FOR QUESTIONS -->
+      <section class="page" id="page-q1"></section>
+      <section class="page" id="page-q2"></section>
+      <section class="page" id="page-q3"></section>
+      <section class="page" id="page-q4"></section>
+      <section class="page" id="page-q5"></section>
+      <section class="page" id="page-q6"></section>
+      <section class="page" id="page-q7"></section>
+      <section class="page" id="page-q8"></section>
+
+      <!-- PAGE: RESULT -->
+      <section class="page" id="page-result">
+        <div class="qwrap result">
+          <img id="result-image" src="" alt="Gambar hasil" />
+          <div>
+            <div class="qno">Hasil Kuis</div>
+            <div class="rtype" id="result-title">Tipe karaktermu</div>
+            <p class="rdesc" id="result-desc"></p>
+            <div class="actions">
+              <button class="btn" id="retryBtn">Ulangi</button>
+              <button class="btn secondary" id="printBtn">Cetak / Simpan PDF</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      © <span id="yy"></span> — LTKL.
+    </footer>
   </div>
 
   <script>
-    const questions = [
+    document.getElementById('yy').textContent = new Date().getFullYear();
+
+    const QUESTIONS = [
       {
-        text: "Kalau kamu jadi pemimpin daerah, hal pertama yang paling pengen kamu benahi adalah…",
-        options: [
-          { label: "A. Kesejahteraan lewat ekonomi hijau & pelestarian alam", type: "A" },
-          { label: "B. Bikin aturan yang jelas biar komunitas dan masyarakat bisa jalan tanpa hambatan.", type: "B" },
-          { label: "C. Percepatan investasi & infrastruktur besar", type: "C" },
-          { label: "D. Siaga darurat: cegah bencana, tangani krisis dulu", type: "D" }
-        ]
+        id: 'q1',
+        title: '1. Kalau kamu jadi pemimpin daerah, hal pertama yang paling pengen kamu benahi adalah…',
+        options: {
+          A: 'Kesejahteraan lewat ekonomi hijau & pelestarian alam.',
+          B: 'Bikin aturan yang jelas biar komunitas dan masyarakat bisa jalan tanpa hambatan.',
+          C: 'Percepatan investasi & pembangunan infrastruktur besar.',
+          D: 'Siaga darurat: cegah bencana, tangani krisis dulu.'
+        }
       },
       {
-        text: "Cara kamu melihat isu lingkungan adalah…",
-        options: [
-          { label: "A. Investasi masa depan, harus dikelola berkelanjutan", type: "A" },
-          { label: "B. Tanggung jawab bersama, meski sering pemerintahnya nggak konsisten", type: "B" },
-          { label: "C. Pastikan ada aturan main yang jelas, tapi pembangunan tetap jalan.", type: "C" },
-          { label: "D. Fokus redam konflik dulu biar nggak chaos.", type: "D" }
-        ]
+        id: 'q2',
+        title: '2. Cara kamu melihat isu lingkungan adalah…',
+        options: {
+          A: 'Investasi masa depan, harus dikelola berkelanjutan.',
+          B: 'Tanggung jawab bersama, meski sering pemerintahnya nggak konsisten.',
+          C: 'Penting, tapi jangan sampai menghambat pertumbuhan ekonomi.',
+          D: 'Sesuatu yang sering jadi sumber masalah besar, harus cepat diatasi.'
+        }
       },
       {
-        text: "Kalau ada konflik lahan antara masyarakat dan perusahaan, sikapmu?",
-        options: [
-          { label: "A. Mediasi, cari solusi yang jaga alam sekaligus sejahterakan rakyat.", type: "A" },
-          { label: "B. Dukung warga, karena mereka sering lebih peduli daripada pemerintah.", type: "B" },
-          { label: "C. Pastikan aturan jelas, pembangunan tetap jalan", type: "C" },
-          { label: "D. Redam konflik dulu biar nggak chaos", type: "D" }
-        ]
+        id: 'q3',
+        title: '3. Kalau ada konflik lahan antara masyarakat dan perusahaan, sikapmu?',
+        options: {
+          A: 'Mediasi, cari solusi yang jaga alam sekaligus sejahterakan rakyat.',
+          B: 'Dukung warga, karena mereka sering lebih peduli daripada pemerintah.',
+          C: 'Pastikan ada aturan main yang jelas, tapi pembangunan tetap jalan.',
+          D: 'Fokus redam konflik dulu biar nggak chaos.'
+        }
       },
       {
-        text: "Menurutmu, apa tanda kemajuan paling penting?",
-        options: [
-          { label: "A. Masyarakat sehat, miskin berkurang, budaya lokal hidup", type: "A" },
-          { label: "B. Rakyat bisa mandiri walau pemerintah lemah", type: "B" },
-          { label: "C. Ekonomi tumbuh pesat, proyek besar jalan", type: "C" },
-          { label: "D. Masyarakat selamat dari bencana & punya akses dasar", type: "D" }
-        ]
+        id: 'q4',
+        title: '4. Menurutmu, apa tanda kemajuan paling penting?',
+        options: {
+          A: 'Masyarakat sehat, miskin berkurang, budaya lokal tetap hidup.',
+          B: 'Rakyat bisa mandiri walau pemerintah lemah.',
+          C: 'Ekonomi tumbuh pesat, proyek-proyek besar jalan.',
+          D: 'Masyarakat selamat dari bencana & punya akses dasar.'
+        }
       },
       {
-        text: "Kalau kamu punya dana besar, akan dipakai untuk…",
-        options: [
-          { label: "A. Investasi hijau, ekowisata, UMKM lokal", type: "A" },
-          { label: "B. Perkuat komunitas & program swadaya", type: "B" },
-          { label: "C. Kawasan industri, food estate, atau infrastruktur strategis.", type: "C" },
-          { label: "D. Restorasi lahan rusak & tanggap darurat", type: "D" }
-        ]
+        id: 'q5',
+        title: '5. Kalau kamu punya dana besar, akan dipakai untuk…',
+        options: {
+          A: 'Investasi hijau, ekowisata, dan UMKM lokal.',
+          B: 'Perkuat komunitas dan program swadaya masyarakat.',
+          C: 'Kawasan industri, food estate, atau infrastruktur strategis.',
+          D: 'Restorasi lahan rusak, tanggap darurat bencana.'
+        }
       },
       {
-        text: "Tantangan terbesar menurutmu dalam pembangunan daerah adalah…",
-        options: [
-          { label: "A. Menjaga konsistensi kebijakan supaya berkelanjutan", type: "A" },
-          { label: "B. Korupsi, kepentingan politik, kebijakan plin-plan", type: "B" },
-          { label: "C. Menyeimbangkan pertumbuhan ekonomi dengan dampak sosial.", type: "C" },
-          { label: "D. Kerusakan alam parah & lemahnya penegakan hukum.", type: "D" }
-        ]
+        id: 'q6',
+        title: '6. Tantangan terbesar menurutmu dalam pembangunan daerah adalah…',
+        options: {
+          A: 'Menjaga konsistensi kebijakan supaya berkelanjutan.',
+          B: 'Korupsi, kepentingan politik, dan kebijakan plin-plan.',
+          C: 'Menyeimbangkan pertumbuhan ekonomi dengan dampak sosial.',
+          D: 'Kerusakan alam parah & lemahnya penegakan hukum.'
+        }
       },
       {
-        text: "Kalau ada demo masyarakat soal lingkungan, kamu akan…",
-        options: [
-          { label: "A. Dengarkan & libatkan mereka dalam kebijakan", type: "A" },
-          { label: "B. Ikut dorong aksi masyarakat biar makin kuat", type: "B" },
-          { label: "C. Klarifikasi aturan & jelaskan manfaat ekonomi yang sedang dibangun.", type: "C" },
-          { label: "D. Turun tangan langsung untuk cegah konflik meluas.", type: "D" }
-        ]
+        id: 'q7',
+        title: '7. Kalau ada demo masyarakat soal lingkungan, kamu akan…',
+        options: {
+          A: 'Dengarkan & libatkan mereka dalam kebijakan.',
+          B: 'Ikut mendorong aksi masyarakat biar suaranya makin kuat.',
+          C: 'Klarifikasi aturan & jelaskan manfaat ekonomi yang sedang dibangun.',
+          D: 'Turun tangan langsung untuk cegah konflik meluas.'
+        }
       },
       {
-        text: "Visi jangka panjangmu untuk kabupaten adalah…",
-        options: [
-          { label: "A. Kabupaten sejahtera, hijau, jadi contoh global", type: "A" },
-          { label: "B. Kabupaten mandiri, warganya solid walau pemerintah sering kacau.", type: "B" },
-          { label: "C. Kabupaten jadi pusat ekonomi besar, meski alam harus dikompromi.", type: "C" },
-          { label: "D. Kabupaten bertahan hidup di tengah krisis, sedikit demi sedikit pulih.", type: "D" }
-        ]
+        id: 'q8',
+        title: '8. Visi jangka panjangmu untuk kabupaten adalah…',
+        options: {
+          A: 'Kabupaten sejahtera, hijau, dan jadi contoh global.',
+          B: 'Kabupaten mandiri, warganya solid walau pemerintah sering kacau.',
+          C: 'Kabupaten jadi pusat ekonomi besar, meski alam harus dikompromi.',
+          D: 'Kabupaten bertahan hidup di tengah krisis, sedikit demi sedikit pulih.'
+        }
       }
     ];
 
-    let currentQuestion = 0;
-    let answers = { A: 0, B: 0, C: 0, D: 0 };
+    const RESULT_CONTENT = {
+      A: {
+        title: 'Arsitek Lestari 🌱',
+        desc: 'kamu adalah seorang Arsitek Lestari. Kamu melihat masa depan sebagai investasi jangka panjang. Prioritas utamamu adalah menciptakan pembangunan yang harmonis antara kemajuan ekonomi, kelestarian lingkungan, dan kesejahteraan sosial. Kamu percaya bahwa pertumbuhan harus berkelanjutan, di mana alam dan masyarakat menjadi fondasi utama.'
+      },
+      B: {
+        title: 'Penjaga Benteng 🛡️',
+        desc: 'kamu adalah seorang Penjaga Benteng. Kamu berfokus pada kekuatan dan kemandirian masyarakat. Kamu percaya bahwa solusi terbaik datang dari akar rumput, bukan dari atas. Tujuan utamamu adalah memberdayakan komunitas agar bisa mandiri, kuat, dan mampu menghadapi tantangan, terlepas dari kebijakan pemerintah yang sering berubah-ubah atau tidak konsisten.'
+      },
+      C: {
+        title: 'Inovator Pragmatis ⚙️',
+        desc: 'kamu adalah seorang Inovator Pragmatis. Kamu berorientasi pada hasil nyata dan pertumbuhan ekonomi yang cepat. Kunci kemajuan bagimu adalah investasi, pembangunan infrastruktur, dan inovasi yang mendorong produktivitas. Aturan jelas penting, tapi tidak boleh menjadi penghalang untuk kemajuan ekonomi yang signifikan.'
+      },
+      D: {
+        title: 'Pemadam Kebakaran 🔥',
+        desc: 'kamu adalah seorang Pemadam Kebakaran. Kamu punya insting kuat untuk bertindak cepat dan mengatasi masalah yang paling mendesak. Fokusmu adalah kesiapsiagaan dan penanganan krisis demi keselamatan dan pemenuhan kebutuhan dasar masyarakat, terutama saat bencana atau darurat.'
+      }
+    };
 
-    function startQuiz() {
-      document.getElementById('startPage').classList.add('hidden');
-      document.getElementById('quizPage').classList.remove('hidden');
-      showQuestion();
+    // 3 gambar random per tipe (gunakan link Anda sendiri bila perlu)
+    const RESULT_IMAGES = {
+      A: [
+        'arsitek lestari.webp',
+        'arsitek lestari2.webp',
+        'arsitek lestari3.webp'
+      ],
+      B: [
+        'penjagabenteng.webp',
+        'penjagabenteng2.webp',
+        'penjagabenteng3.webp'
+      ],
+      C: [
+        'inovatorpragmatis.webp',
+        'inovatorpragmatis2.webp',
+        'inovatorpragmatis3.webp'
+      ],
+      D: [
+        'pemadamkebakaran.webp',
+        'pemadamkebakaran2.webp',
+        'pemadamkebakaran3.webp'
+      ]
+    };
+
+    // Build question pages dynamically
+    QUESTIONS.forEach((q, idx) => {
+      const page = document.getElementById(`page-q${idx+1}`);
+      page.innerHTML = `
+        <div class="qwrap qgrid">
+          <div>
+            <div class="qhead">
+              <div class="qno">Pertanyaan ${idx+1} / ${QUESTIONS.length}</div>
+            </div>
+            <h3 class="qtitle">${q.title}</h3>
+            <div class="options" role="radiogroup" aria-label="${q.title}">
+              ${Object.entries(q.options).map(([k,v]) => `
+                <label class="opt">
+                  <input type="radio" name="${q.id}" value="${k}" aria-label="${k}. ${v}">
+                  <div class="alpha">${k}</div>
+                  <div class="otxt">${v}</div>
+                </label>
+              `).join('')}
+            </div>
+            <div class="nav">
+              <button class="btn ghost" data-back="${idx}">${idx===0? 'Kembali' : 'Kembali'}</button>
+              <button class="btn" data-next="${idx+2}">${idx === QUESTIONS.length-1 ? 'Lihat Hasil' : 'Selanjutnya'}</button>
+            </div>
+          </div>
+          <div>
+            <img src="pertanyaan${idx+1}.webp" alt="Ilustrasi pertanyaan ${idx+1}" style="width:500px; height:567px; object-fit:cover; border-radius:18px; padding-left:30px; " />
+          </div>
+        </div>`;
+    });
+
+    // Navigation helpers
+    const pages = Array.from(document.querySelectorAll('.page'));
+    function go(id){
+      pages.forEach(p=>p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
     }
 
-    function showQuestion() {
-      if (currentQuestion < questions.length) {
-        const q = questions[currentQuestion];
-        document.getElementById('questionText').innerText = q.text;
-        const optionsDiv = document.getElementById('options');
-        optionsDiv.innerHTML = '';
-        q.options.forEach(opt => {
-          const btn = document.createElement('div');
-          btn.className = 'option';
-          btn.innerText = opt.label;
-          btn.onclick = () => selectOption(opt.type);
-          optionsDiv.appendChild(btn);
-        });
-      } else {
-        showResult();
-      }
+    document.getElementById('startBtn').addEventListener('click', () => go('page-q1'));
+
+    document.querySelectorAll('[data-back]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const idx = parseInt(btn.getAttribute('data-back'),10);
+        if(idx<=0){ go('page-start'); } else { go(`page-q${idx}`); }
+      });
+    });
+
+    document.querySelectorAll('[data-next]').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const target = btn.getAttribute('data-next');
+        const container = btn.closest('.page');
+        const input = container.querySelector('input[type="radio"]:checked');
+        if(!input){
+          // simple inline nudge
+          btn.animate([
+            { transform:'translateX(0)' },
+            { transform:'translateX(-4px)' },
+            { transform:'translateX(4px)' },
+            { transform:'translateX(0)' }
+          ], { duration:180, iterations:1 });
+          return;
+        }
+        if(target === String(QUESTIONS.length+1)){
+          showResult();
+        } else {
+          go(`page-q${target}`);
+        }
+      });
+    });
+
+    function tally(){
+      const counts = {A:0,B:0,C:0,D:0};
+      QUESTIONS.forEach(q=>{
+        const selected = document.querySelector(`input[name="${q.id}"]:checked`);
+        if(selected){ counts[selected.value]++; }
+      });
+      return counts;
     }
 
-    function selectOption(type) {
-      answers[type]++;
-      currentQuestion++;
-      showQuestion();
+    function winner(counts){
+      const order = ['A','B','C','D']; // tie-breaker priority A > B > C > D
+      let best = 'A', bestVal = -1;
+      order.forEach(k=>{
+        if(counts[k] > bestVal){ bestVal = counts[k]; best = k; }
+      });
+      return best;
     }
 
-    function showResult() {
-      document.getElementById('quizPage').classList.add('hidden');
-      document.getElementById('resultPage').classList.remove('hidden');
+    function showResult(){
+      const counts = tally();
+      const key = winner(counts);
+      const {title, desc} = RESULT_CONTENT[key];
+      const imgs = RESULT_IMAGES[key];
+      const rand = imgs[Math.floor(Math.random()*imgs.length)];
 
-      let maxType = 'A';
-      for (let key in answers) {
-        if (answers[key] > answers[maxType]) maxType = key;
-      }
+      document.getElementById('result-title').textContent = `Tipe karaktermu adalah : ${title}`;
+      document.getElementById('result-desc').textContent = desc;
+      const img = document.getElementById('result-image');
+      img.src = rand; img.alt = title;
 
-      let resultText = '';
-      let resultImgSrc = '';
-      if (maxType === 'A') {
-        resultText = '🌱 Arsitek Lestari: Kamu melihat masa depan sebagai investasi jangka panjang. Prioritas utamamu adalah menciptakan pembangunan yang harmonis antara kemajuan ekonomi, kelestarian lingkungan, dan kesejahteraan sosial. Kamu percaya bahwa pertumbuhan harus berkelanjutan, di mana alam dan masyarakat menjadi fondasi utama.';
-        resultImgSrc = 'arsitek lestari.webp';
-      }
-      if (maxType === 'B') {
-        resultText = '🛡️ Penjaga Benteng: Kamu berfokus pada kekuatan dan kemandirian masyarakat. Kamu percaya bahwa solusi terbaik datang dari akar rumput, bukan dari atas. Tujuan utamamu adalah memberdayakan komunitas agar bisa mandiri, kuat, dan mampu menghadapi tantangan, terlepas dari kebijakan pemerintah yang sering berubah-ubah atau tidak konsisten.';
-        resultImgSrc = 'penjagabenteng.webp';
-      }
-      if (maxType === 'C') {
-        resultText = '⚙️ Inovator Pragmatis: Kamu adalah seseorang yang berorientasi pada hasil nyata dan pertumbuhan ekonomi yang cepat. Kamu percaya bahwa kunci kemajuan adalah melalui investasi, pembangunan infrastruktur, dan inovasi yang mendorong produktivitas. Bagimu, aturan yang jelas adalah penting, tetapi tidak boleh menjadi penghalang untuk mencapai kemajuan ekonomi yang signifikan';
-        resultImgSrc = 'inovatorpragmatis.webp';
-      }
-      if (maxType === 'D') {
-        resultText = '🔥 Pemadam Kebakaran: Kamu memiliki insting yang kuat untuk bertindak cepat dan mengatasi masalah yang paling mendesak. Kamu selalu fokus pada kesiapsiagaan dan penanganan krisis. Bagimu, hal terpenting adalah memastikan keselamatan dan pemenuhan kebutuhan dasar masyarakat, terutama saat terjadi bencana atau situasi darurat.';
-        resultImgSrc = 'pemadamkebakaran.webp';
-      }
-
-      document.getElementById('resultText').innerText = resultText;
-      const resultImage = document.getElementById('resultImage');
-      resultImage.src = resultImgSrc;
-      resultImage.classList.remove('hidden');
+      go('page-result');
     }
 
-    function restartQuiz() {
-      currentQuestion = 0;
-      answers = { A: 0, B: 0, C: 0, D: 0 };
-      document.getElementById('resultPage').classList.add('hidden');
-      document.getElementById('startPage').classList.remove('hidden');
-      document.getElementById('resultImage').classList.add('hidden');
-    }
+    document.getElementById('retryBtn').addEventListener('click', ()=>{
+      // reset answers
+      document.querySelectorAll('input[type="radio"]').forEach(i=> i.checked=false);
+      go('page-start');
+    });
+    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
   </script>
 </body>
 </html>
